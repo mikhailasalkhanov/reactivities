@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { observer } from 'mobx-react-lite'
 
 export default observer(function ActivityDetailedSidebar () {
-    return (
+  return (
         <>
             <Segment
                 textAlign='center'
@@ -29,7 +29,7 @@ export default observer(function ActivityDetailedSidebar () {
                         <Image size='tiny' src={'/assets/user.png'} />
                         <Item.Content verticalAlign='middle'>
                             <Item.Header as='h3'>
-                                <Link to={`#`}>Bob</Link>
+                                <Link to={'#'}>Bob</Link>
                             </Item.Header>
                             <Item.Extra style={{ color: 'orange' }}>Following</Item.Extra>
                         </Item.Content>
@@ -39,7 +39,7 @@ export default observer(function ActivityDetailedSidebar () {
                         <Image size='tiny' src={'/assets/user.png'} />
                         <Item.Content verticalAlign='middle'>
                             <Item.Header as='h3'>
-                                <Link to={`#`}>Tom</Link>
+                                <Link to={'#'}>Tom</Link>
                             </Item.Header>
                             <Item.Extra style={{ color: 'orange' }}>Following</Item.Extra>
                         </Item.Content>
@@ -49,7 +49,7 @@ export default observer(function ActivityDetailedSidebar () {
                         <Image size='tiny' src={'/assets/user.png'} />
                         <Item.Content verticalAlign='middle'>
                             <Item.Header as='h3'>
-                                <Link to={`#`}>Sally</Link>
+                                <Link to={'#'}>Sally</Link>
                             </Item.Header>
                         </Item.Content>
                     </Item>
@@ -57,5 +57,5 @@ export default observer(function ActivityDetailedSidebar () {
             </Segment>
         </>
 
-    )
+  )
 })
