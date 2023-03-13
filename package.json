@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "calendar": "^0.1.1",
+    "formik": "^2.2.9",
+    "react": "^18.2.0",
+    "react-calendar": "^4.0.0"
+  }
+}

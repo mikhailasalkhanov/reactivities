@@ -1,83 +1,103 @@
 /* eslint-disable no-prototype-builtins */
-import axios, { type AxiosError, type AxiosResponse } from 'axios'
-import { toast } from 'react-toastify'
-import { type Activity } from '../models/activity'
-import { router } from '../router/Routes'
-import { store } from '../strores/store'
+import axios, { type AxiosError, type AxiosResponse } from "axios";
+import { toast } from "react-toastify";
+import { type Activity } from "../models/activity";
+import { User, UserFormValues } from "../models/user";
+import { router } from "../router/Routes";
+import { store } from "../strores/store";
 
 const sleep = async (delay: number) => {
   return await new Promise((resolve) => {
-    setTimeout(resolve, delay)
-  })
-}
+    setTimeout(resolve, delay);
+  });
+};
 
-axios.defaults.baseURL = 'http://localhost:5000/api'
+axios.defaults.baseURL = "http://localhost:5000/api";
 
 axios.interceptors.response.use(
   async (response) => {
-    await sleep(1000)
-    return response
+    await sleep(1000);
+    return response;
   },
   async (error: AxiosError) => {
-    const { data, status, config } = error.response as AxiosResponse
+    const { data, status, config } = error.response as AxiosResponse;
     switch (status) {
       case 400:
-        if (config.method === 'get' && data.errors.hasOwnProperty('id')) {
-          router.navigate('/not-found')
+        if (config.method === "get" && data.errors.hasOwnProperty("id")) {
+          router.navigate("/not-found");
         }
         if (data.errors) {
-          const modelStateErrors = []
+          const modelStateErrors = [];
           for (const key in data.errors) {
             if (data.errors[key]) {
-              modelStateErrors.push(data.errors[key])
+              modelStateErrors.push(data.errors[key]);
             }
           }
-          throw modelStateErrors.flat()
+          throw modelStateErrors.flat();
         } else {
-          toast.error(data)
+          toast.error(data);
         }
-        break
+        break;
       case 401:
-        toast.error('Unautorized')
-        break
+        toast.error("Unautorized");
+        break;
       case 403:
-        toast.error('Forbidden')
-        break
+        toast.error("Forbidden");
+        break;
       case 404:
-        router.navigate('/not-found')
-        break
+        router.navigate("/not-found");
+        break;
       case 500:
-        store.commonStore.setServerError(data)
-        router.navigate('/server-error')
-        break
+        store.commonStore.setServerError(data);
+        router.navigate("/server-error");
+        break;
       default:
-        break
+        break;
     }
-    return await Promise.reject(error)
+    return await Promise.reject(error);
   }
-)
+);
 
-const responseBody = <T>(response: AxiosResponse<T>) => response.data
+const responseBody = <T>(response: AxiosResponse<T>) => response.data;
+
+axios.interceptors.request.use(config => {
+  const token = store.commonStore.token;
+  if (token && config.headers) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+}) 
 
 const requests = {
   get: async <T>(url: string) => await axios.get<T>(url).then(responseBody),
   post: async <T>(url: string, body: unknown) =>
     await axios.post<T>(url, body).then(responseBody),
-  put: async <T>(url: string, body: unknown) => await axios.put<T>(url, body).then(responseBody),
-  del: async <T>(url: string) => await axios.delete<T>(url).then(responseBody)
-}
+  put: async <T>(url: string, body: unknown) =>
+    await axios.put<T>(url, body).then(responseBody),
+  del: async <T>(url: string) => await axios.delete<T>(url).then(responseBody),
+};
 
 const Activities = {
-  list: async () => await requests.get<Activity[]>('/activities'),
-  details: async (id: string) => await requests.get<Activity>(`/activities/${id}`),
-  create: async (activity: Activity) => await axios.post<void>('/activities', activity),
+  list: async () => await requests.get<Activity[]>("/activities"),
+  details: async (id: string) =>
+    await requests.get<Activity>(`/activities/${id}`),
+  create: async (activity: Activity) =>
+    await axios.post<void>("/activities", activity),
   update: async (activity: Activity) =>
     await axios.put<void>(`/activities/${activity.id}`, activity),
-  delete: async (id: string) => await axios.delete<void>(`/activities/${id}`)
-}
+  delete: async (id: string) => await axios.delete<void>(`/activities/${id}`),
+};
+
+const Account = {
+  current: () => requests.get<User>("/account"),
+  login: (user: UserFormValues) => requests.post<User>("/account/login", user),
+  register: (user: UserFormValues) =>
+    requests.post<User>("/account/register", user),
+};
 
 const agent = {
-  Activities
-}
+  Activities,
+  Account,
+};
 
-export default agent
+export default agent;

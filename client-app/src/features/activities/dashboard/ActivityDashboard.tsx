@@ -6,7 +6,7 @@ import { useStore } from '../../../app/strores/store'
 import ActivityFilters from './ActivityFilters'
 import ActivityList from './ActivityList'
 
-export default observer(function ActivityDashboard () {
+export default observer(function ActivityDashboard() {
   const { activityStore } = useStore()
   const { loadActivities, activityRegistry } = activityStore
 
@@ -14,7 +14,7 @@ export default observer(function ActivityDashboard () {
     if (activityRegistry.size <= 1) loadActivities()
   }, [loadActivities, activityRegistry])
 
-  if (activityStore.loadingInitial) return <LoadingComponent content='Loading app' />
+  if (activityStore.loadingInitial) return <LoadingComponent content='Loading activities...' />
 
   return (
     <Grid>
